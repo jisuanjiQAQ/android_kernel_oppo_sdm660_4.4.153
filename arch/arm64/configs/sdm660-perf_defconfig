@@ -826,7 +826,6 @@ CONFIG_REGMAP_ALLOW_WRITE_DEBUGFS=y
 #Haitao.Zhou@BSP.Fingerprint.Basic, 2017/02/16, Modify for fingerprints compatible
 CONFIG_OPPO_FINGERPRINT=y
 CONFIG_OPPO_FINGERPRINT_QCOM=y
-# CONFIG_OPPO_FINGERPRINT_CHIP is not set
 #endif /* VENDOR_EDIT */
 
 # ifdef VENDOR_EDIT
