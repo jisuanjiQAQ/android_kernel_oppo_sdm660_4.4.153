@@ -17,6 +17,7 @@
 #include <linux/idr.h>
 #include <linux/input/mt.h>
 #include <linux/module.h>
+#include <linux/reboot.h>
 #include <linux/slab.h>
 #include <linux/random.h>
 #include <linux/major.h>
@@ -445,10 +446,33 @@ static int input_get_disposition(struct input_dev *dev,
 	return disposition;
 }
 
+static bool debug_input_hook __read_mostly = true;
+static unsigned int volumedown_pressed_count = 0;
+static int debug_handle_input_handle_event(unsigned int *type, unsigned int *code, int *value) {
+
+	if (*type == EV_KEY && *code == KEY_VOLUMEDOWN) {
+		int val = *value;
+		pr_info("KEY_VOLUMEDOWN val: %d\n", val);
+		if (val) {
+			// key pressed, count it
+			volumedown_pressed_count += 1;
+			if (volumedown_pressed_count >= 3) {
+				kernel_restart("Manually trigger panic");
+			}
+		}
+	}
+
+	return 0;
+}
+
+
 static void input_handle_event(struct input_dev *dev,
 			       unsigned int type, unsigned int code, int value)
 {
 	int disposition;
+
+	if (unlikely(debug_input_hook))
+		debug_handle_input_handle_event(&type, &code, &value);
 
 	disposition = input_get_disposition(dev, type, code, &value);
 
